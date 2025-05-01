@@ -1,0 +1,20 @@
+- name: Create .composer-docker/cache directory
+  file:
+    path: /home/ubuntu/.composer-docker/cache
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+
+- name: Template the docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /home/ubuntu/yii2-app/docker-compose.yml
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+
+- name: Deploy Yii2 app as stack
+  shell: docker stack deploy -c docker-compose.yml yii2app
+  args:
+    chdir: /home/ubuntu/yii2-app/

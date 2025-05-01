@@ -1,0 +1,27 @@
+# roles/nginx/tasks/main.yml
+- name: Install NGINX
+  apt:
+    name: nginx
+    state: present
+
+- name: Copy NGINX site config using template
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/yii2-app
+
+- name: Enable NGINX site
+  file:
+    src: /etc/nginx/sites-available/yii2-app
+    dest: /etc/nginx/sites-enabled/yii2-app
+    state: link
+    force: yes
+
+- name: Remove default NGINX site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Restart NGINX
+  service:
+    name: nginx
+    state: restarted

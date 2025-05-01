@@ -1,0 +1,8 @@
+# site.yml
+- hosts: all
+  become: yes
+  roles:
+    - common
+    - docker
+    - nginx
+    - yii2

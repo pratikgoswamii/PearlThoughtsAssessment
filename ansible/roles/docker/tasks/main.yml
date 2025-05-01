@@ -1,0 +1,33 @@
+# roles/docker/tasks/main.yml
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Install Docker packages
+  apt:
+    name: ['docker.io', 'docker-compose']
+    state: present
+    update_cache: yes
+
+- name: Enable and start Docker
+  service:
+    name: docker
+    enabled: yes
+    state: started
+
+- name: Check if node is part of a Docker Swarm
+  shell: docker info --format '{{ "{{.Swarm.LocalNodeState}}" }}'
+  register: swarm_status
+  changed_when: false
+
+- name: Initialize Docker Swarm
+  shell: docker swarm init
+  when: swarm_status.stdout != "active"
+  register: swarm_init
+  changed_when: "'Swarm initialized' in swarm_init.stdout"

@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  php:
+    image: yiisoftware/yii2-php:8.3-apache
+    environment:
+      - VIRTUAL_HOST={{ ansible_facts.default_ipv4.address }}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - /home/ubuntu/.composer-docker/cache:/root/.composer/cache:delegated
+      - /home/ubuntu/yii2-app:/app:delegated
+    ports:
+      - '8000:80'
